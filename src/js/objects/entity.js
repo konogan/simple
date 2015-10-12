@@ -11,12 +11,15 @@ var Entity = function Entity() {
     radius: 1,
     lastPositions: [],
 
-    init: function(x, y, speed, direction, radius) {
+    init: function(x, y, speed, direction, radius, context) {
       this.position = new Vector(x, y); // initial poistion
       this.velocity = new Vector(0, 0); // initial velocity
       this.velocity.setLength(speed);
       this.velocity.setAngle(direction);
       this.radius = radius || 10;
+      if (context) {
+        this.ctx = context;
+      }
       return this;
     },
 
@@ -81,18 +84,29 @@ var Entity = function Entity() {
 
     drawInfos: function(_ctx) {
         _ctx.font = '20pt VT323';
-        _ctx.textAlign = 'center';
-        _ctx.fillStyle = 'grey';
+        _ctx.fillStyle = 'white';
         _ctx.fillText(
-          'x: ' + Math.round(this.position.x * 100) /100,
+          'x: ' + Math.round(this.position.x * 100) / 100,
           this.position.x + 80,
           this.position.y - 20
         );
-         _ctx.fillText(
-          'y: ' + Math.round(this.position.y * 100) /100,
-          this.position.x + 80,
-          this.position.y
-        );
+        _ctx.fillText(
+         'y: ' + Math.round(this.position.y * 100) / 100,
+         this.position.x + 80,
+         this.position.y
+       );
+
+        _ctx.fillText(
+         'velocity.angle: ' + Math.round(this.velocity.getAngle() * 100) / 100,
+         this.position.x + 80,
+         this.position.y + 20
+       );
+        _ctx.fillText(
+         'velocity.lenght: ' + Math.round(this.velocity.getLength() * 100) / 100,
+         this.position.x + 80,
+         this.position.y + 40
+       );
+
       }
   };
 
