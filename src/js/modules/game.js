@@ -6,6 +6,7 @@ var Input = require('../modules/input.js');
 var Vector = require('../modules/vector.js');
 
 var Entity = require('../objects/entity.js');
+var Ship = require('../objects/ship.js');
 
 var Game = function() {
   var _lastTime;
@@ -28,16 +29,12 @@ var Game = function() {
   // init the differents entities
   var sun = new Entity();
   var planet = new Entity();
-  var ship = new Entity();
-
-  // var asteroids = [];
-  // var MAXASTER = 100;
-  // for (var i = 0; i < MAXASTER; i++) {
-  //   asteroids[i] = new Entity();
-  // }
+  var ship = new Ship();
 
   // init user interaction
   var interactions = new Input();
+
+  var projectilesList = [];
 
   // game
   game.init = function() {
@@ -46,16 +43,22 @@ var Game = function() {
     game.canvasList.ui = new Canvas('ui', 2, game);
     game.canvasList.main = new Canvas('main', 1, game);
 
+    // init background color
+
+    game.canvasList.bkgnd.ctx.fillStyle = 'black';
+    game.canvasList.bkgnd.ctx.rect(0, 0, game.width, game.height);
+    game.canvasList.bkgnd.ctx.fill();
+
     // init the differents entities
-    sun = sun.init(
+    sun.init(
       game.width / 2,
       game.height / 2,
       0,
       0
     );
-    sun.mass = 100;
+    sun.mass = 1000;
 
-    planet = planet.init(
+    planet.init(
       game.width / 2 + 200,
       game.height / 2,
       .5,
@@ -63,104 +66,113 @@ var Game = function() {
     );
     planet.mass = 100;
 
-    // for (var i = 0; i < MAXASTER; i++) {
-    //   asteroids[i].init(
-    //     Math.random() * game.width,
-    //     Math.random() * game.height,
-    //     Math.random() * 2,
-    //     Math.random() * 2 * Math.PI
-    //   );
-    //   asteroids[i].mass = 10;
-    // }
+    ship.init(
+      game.width / 2 + 200,
+      game.height / 2 + 100,
+      0,
+      Math.PI / 4,
+      10,
+      game.canvasList.main.ctx
+    );
+    ship.mass = 50;
 
     // begin the game loop
+
     game.loop();
   };
 
   game.update = function(dt) {
-    // controls
-    if (interactions.isDown('up')) {
-      console.log('up');
-    }
-
-    if (interactions.isDown('down')) {
-      console.log('down');
-    }
-
-    if (interactions.isDown('left')) {
-      console.log('left');
-    }
-
-    if (interactions.isDown('right')) {
-      console.log('right');
-    }
-
-    if (interactions.isPressed('space')) {
-      game.pause != game.pause;
-    }
-    // forces-----
-    planet.gravitateAround(sun);
-
-    // forces pour les asteroids
-    //  - entre eux
-    //  - le soleil
-    //  - la planete
-    /*for (var i = 0; i < MAXASTER; i++) {
-      asteroids[i].gravitateAround(sun);
-      asteroids[i].gravitateAround(planet);
-      planet.gravitateAround(asteroids[i]);
-      for (var j = 0; j < MAXASTER; j++) {
-        if (i != j) {
-
-          asteroids[i].gravitateAround(asteroids[j]);
-        }
+    if (!game.pause) {
+      // controls
+      if (interactions.isDown('up')) {
+        ship.accelerate();
+        // console.log('up');
       }
-      asteroids[i].update(dt);
-    }*/
 
-    planet.update(dt);
+      if (interactions.isDown('down')) {
+        ship.decelerate();
+        // console.log('down');
+      }
 
+      if (interactions.isDown('left')) {
+        ship.turnLeft();
+        // console.log('left');
+      }
+
+      if (interactions.isDown('right')) {
+        ship.turnRight();
+        // console.log('right');
+      }
+
+      if (interactions.isDown('spacebar')) {
+        projectilesList.push(ship.fire());
+        // console.log('right');
+      }
+
+      // forces-----
+      planet.gravitateAround(sun);
+      //ship.gravitateAround(sun);
+      //
+      for (var i = 0; i < projectilesList.length; i++) {
+      projectilesList[i].gravitateAround(sun);
+    }
+
+      // updates
+      planet.update(dt);
+      ship.update(dt);
+      //ship.updatebullets(dt);
+      game.updateProjectiles(dt);
+    }
+
+    if (interactions.isPressed('enter')) {
+      console.log('space' + game.pause);
+      game.pause = !game.pause;
+    }
     game.draw();
   };
 
-  game.draw = function() {
-    game.canvasList.main.clean();
-    game.canvasList.ui.clean();
-    // game.canvasList.main.ctx.globalCompositeOperation = 'source-over';
-    // game.canvasList.main.ctx.fillStyle = 'rgba(0, 0, 0, 0.09)';
-    // game.canvasList.main.ctx.fillRect(
-    //   0,
-    //   0,
-    //   game.width,
-    //   game.height
-    // );
+  game.updateProjectiles = function(dt) {
+    // update all projectiles
+    for (var i = 0; i < projectilesList.length; i++) {
+      projectilesList[i].update();
+    }
 
-    // game.canvasList.main.ctx.globalCompositeOperation = 'lighter';
-
-    sun.drawDebug(game.canvasList.main.ctx, 'yellow', 20);
-    planet.drawDebug(game.canvasList.main.ctx, 'red', 10, false);
-    planet.drawInfos(game.canvasList.ui.ctx);
-
-/*    for (var i = 0; i < MAXASTER; i++) {
-      asteroids[i].drawDebug(game.canvasList.main.ctx, 'lightblue', 10, false);
-    }*/
+    // collisions of projectiles
+    for (var i = 0; i < projectilesList.length; i++) {
+      if (projectilesList[i].outOfScreen()) {
+        projectilesList.splice(i, 1);
+      }
+    }
 
   };
 
-  game.loop = function() {
-    if (!game.pause) {
-      var now = Date.now();
-      var dt = (now - _lastTime) / 1000;
+  game.draw = function() {
 
-      game.update(dt);
-      game.draw();
+    game.canvasList.main.clean();
+    game.canvasList.ui.clean();
 
-      _lastTime = now;
-      document.title = 'delta in fps: ' + dt;
-      _raf = _requestAnimationFrame(game.loop);
-    } else {
-      _cancelAnimationFrame(_raf);
+    sun.drawDebug(game.canvasList.main.ctx, 'yellow', 20);
+    ship.draw();
+
+    // projectiles
+
+    for (var i = 0; i < projectilesList.length; i++) {
+      projectilesList[i].draw();
     }
+  };
+
+  game.loop = function() {
+
+    var now = Date.now();
+    var dt = (now - _lastTime) / 1000;
+
+    game.update(dt);
+    game.draw();
+
+    _lastTime = now;
+    document.title = 'delta in fps: ' + dt;
+    _raf = _requestAnimationFrame(game.loop);
+
   };
 
   return game;
