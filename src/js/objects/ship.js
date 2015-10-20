@@ -1,6 +1,7 @@
 'use strict';
 var Entity = require('../objects/entity.js');
 var Bullet = require('../objects/bullet.js');
+// var Class = require('../lib/class');
 
 var Ship = function Ship() {
   var ship = new Entity();

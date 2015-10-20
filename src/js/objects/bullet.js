@@ -1,10 +1,12 @@
 'use strict';
 var Entity = require('../objects/entity.js');
+var Particule = require('../objects/particule.js');
 
-var Bullet = function Bullet() {
+var Bullet = function Bullet(hasStreak) {
   var bullet = new Entity();
   bullet.color = 'red';
   bullet.size = 4;
+  bullet.hasStreak = (hasStreak) ? true : false;
 
   bullet.outOfScreen = function() {
     return this.position.x < 0 ||

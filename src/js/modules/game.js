@@ -1,12 +1,11 @@
 'use strict';
 
 var Canvas = require('../modules/canvas.js');
-var Helpers = require('../modules/helpers.js');
 var Input = require('../modules/input.js');
-var Vector = require('../modules/vector.js');
 
-var Entity = require('../objects/entity.js');
-var Ship = require('../objects/ship.js');
+// var Entity = require('../objects/entity.js');
+// var Ship = require('../objects/ship.js');
+var Test = require('../objects/test.js');
 
 var Game = function() {
   var _lastTime;
@@ -27,9 +26,10 @@ var Game = function() {
   };
 
   // init the differents entities
-  var sun = new Entity();
-  var planet = new Entity();
-  var ship = new Ship();
+  // var sun = new Entity();
+  // var planet = new Entity();
+  // var ship = new Ship();
+  var t = new Test();
 
   // init user interaction
   var interactions = new Input();
@@ -50,31 +50,31 @@ var Game = function() {
     game.canvasList.bkgnd.ctx.fill();
 
     // init the differents entities
-    sun.init(
-      game.width / 2,
-      game.height / 2,
-      0,
-      0
-    );
-    sun.mass = 1000;
+    // sun.init(
+    //   game.width / 2,
+    //   game.height / 2,
+    //   0,
+    //   0
+    // );
+    // sun.mass = 1000;
 
-    planet.init(
-      game.width / 2 + 200,
-      game.height / 2,
-      .5,
-      Math.PI / 2
-    );
-    planet.mass = 100;
+    // planet.init(
+    //   game.width / 2 + 200,
+    //   game.height / 2,
+    //   .5,
+    //   Math.PI / 2
+    // );
+    // planet.mass = 100;
 
-    ship.init(
-      game.width / 2 + 200,
-      game.height / 2 + 100,
-      0,
-      Math.PI / 4,
-      10,
-      game.canvasList.main.ctx
-    );
-    ship.mass = 50;
+    // ship.init(
+    //   game.width / 2 + 200,
+    //   game.height / 2 + 100,
+    //   0,
+    //   Math.PI / 4,
+    //   10,
+    //   game.canvasList.main.ctx
+    // );
+    // ship.mass = 50;
 
     // begin the game loop
 
@@ -110,18 +110,20 @@ var Game = function() {
       }
 
       // forces-----
-      planet.gravitateAround(sun);
+      //planet.gravitateAround(sun);
       //ship.gravitateAround(sun);
       //
       for (var i = 0; i < projectilesList.length; i++) {
-      projectilesList[i].gravitateAround(sun);
+        projectilesList[i].gravitateAround(sun);
     }
 
       // updates
-      planet.update(dt);
-      ship.update(dt);
+      //
+      t.update();
+      // planet.update(dt);
+      // ship.update(dt);
       //ship.updatebullets(dt);
-      game.updateProjectiles(dt);
+      //game.updateProjectiles(dt);
     }
 
     if (interactions.isPressed('enter')) {
@@ -151,8 +153,8 @@ var Game = function() {
     game.canvasList.main.clean();
     game.canvasList.ui.clean();
 
-    sun.drawDebug(game.canvasList.main.ctx, 'yellow', 20);
-    ship.draw();
+    // sun.drawDebug(game.canvasList.main.ctx, 'yellow', 20);
+    // ship.draw();
 
     // projectiles
 
@@ -171,7 +173,7 @@ var Game = function() {
 
     _lastTime = now;
     document.title = 'delta in fps: ' + dt;
-    _raf = _requestAnimationFrame(game.loop);
+    //_raf = _requestAnimationFrame(game.loop);
 
   };
 
