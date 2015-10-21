@@ -7,36 +7,6 @@
  *
  * Derived from John Resig's Simple Prototype Inheritance http://ejohn.org/
  * UMD compatible
- *
- * @example
- *      var Class = require('./class');
- *      var Human = Class.extend({
- *          init: function(name) {
- *              this.name = name;
- *              this.attack = 10;
- *              this.health = 100;
- *          },
- *
- *          attack: function(enemy) {
- *              // initial damage
- *              enemy.health -= this.attack;
- *          }
- *      });
- *      var Elf = Class.extend({
- *          init: function(name) {
- *              this.parent(name);
- *              this.magic = 5;
- *          },
- *          attack: function(enemy) {
- *              this.parent(enemy);
- *              // add magic damage to attack
- *              enemy.health -= this.magic;
- *          }
- *      });
- *      var aragorn = new Human('Aragorn');
- *      var legolas = new Elf('Legolas');
- *      aragorn.attack(legolas); // legolas takes 10 damage
- *      legolas.attack(aragorn); // aragorn takes 15 damage
  **/
 (function() {
   'use strict'; // Comply to ES5 standards

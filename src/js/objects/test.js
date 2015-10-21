@@ -4,15 +4,18 @@ var Entity = require('../objects/entity.js');
 var Class = require('../lib/class');
 
 var Test = Entity.extend({
-  init: function() {
-    this.parent().name = 'test';
-    this.name = 'test';
+  init: function(x, y, speed, direction, radius, context) {
+    this.parent(x, y, speed, direction, radius, context);
+    console.log('modify in test');
+    this.radius = 20;
+    this.color = 'red';
   },
 
   update: function() {
+
     this.parent(); // update entity
-    console.log('Test update');
-    console.log('toto', this);
+    console.log('test update');
+    console.log(this);
   },
 
   draw: function() {

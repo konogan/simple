@@ -6,6 +6,7 @@ var Entity = Class.extend({
 
 
   init: function(x, y, speed, direction, radius, context) {
+    console.log('init entity');
     this.name = 'entity';
     this.size = 20; // squa
     this.angle = 0;
