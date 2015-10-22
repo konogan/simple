@@ -1,6 +1,6 @@
 'use strict';
-var Entity = require('../objects/entity.js');
-var Particule = require('../objects/particule.js');
+var Entity = require('../modules/entity.js');
+var Particule = require('../modules/particule.js');
 
 var Bullet = function Bullet(hasStreak) {
   var bullet = new Entity();

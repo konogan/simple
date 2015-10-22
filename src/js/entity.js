@@ -3,11 +3,12 @@ var Vector = require('../modules/vector.js');
 var Class = require('../lib/class');
 
 var Entity = Class.extend({
-
-
-  init: function(x, y, speed, direction, radius, context) {
-    console.log('init entity');
+  init: function() {
     this.name = 'entity';
+  },
+
+  build: function(x, y, speed, direction, radius, context) {
+    console.log('build entity');
     this.size = 20; // squa
     this.angle = 0;
     this.mass = 1;
@@ -49,10 +50,9 @@ var Entity = Class.extend({
   },
 
   update: function(dt) {
-    console.log('entity update');
     //console.log(dt);
-    //this.lastPositions.push(this.position);
-    //this.position.addTo(this.velocity);
+    this.lastPositions.push(this.position);
+    this.position.addTo(this.velocity);
   },
 
   setContext: function(_ctx) {

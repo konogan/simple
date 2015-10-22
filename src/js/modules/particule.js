@@ -1,5 +1,5 @@
 'use strict';
-var Entity = require('../objects/entity.js');
+var Entity = require('../modules/entity.js');
 
 var Particule = function Bullet(lifeTime) {
   var particule = new Entity();
