@@ -13,8 +13,8 @@ module.exports = function(grunt) {
     copy: {
       css:
            {expand: true, cwd: 'src/css/', src: ['**'], dest: 'www/css/'},
-      libs:
-           {expand: true, cwd: 'src/js/libs/', src: ['**'], dest: 'www/js/libs/'},
+      // libs:
+      //      {expand: true, cwd: 'src/js/libs/', src: ['**'], dest: 'www/js/libs/'},
       imgs:
           {expand: true, cwd: 'src/imgs/', src: ['**'], dest: 'www/imgs/'},
       html:
