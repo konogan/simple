@@ -1,31 +1,38 @@
 'use strict';
-var Entity = require('../objects/entity.js');
+var Class = require('../lib/class');
+var Entity = require('../modules/entity.js');
 var Bullet = require('../objects/bullet.js');
 
-var Ship = function Ship() {
-  var ship = new Entity();
+var Ship = Entity.extend({
+  init: function() {
+    this.name = 'Ship';
+  },
 
-  ship.shield = 100;
-  ship.turningRadius = .05;
-  ship.speedLimit = 10;
-  ship.inMotion = false;
-  ship.color = 'blue';
-  ship.bullets = [];
+  build: function(x, y, speed, direction, radius, context) {
+    console.log('Build Ship');
+    this.parent(x, y, speed, direction, radius, context);
+    this.shield = 100;
+    this.turningRadius = .05;
+    this.speedLimit = 10;
+    this.inMotion = false;
+    this.color = 'blue';
+    this.bullets = [];
+  },
 
-  ship.turnLeft = function() {
+  turnLeft: function() {
     console.log('turnLeft');
     var _currentAngle = this.velocity.getAngle();
     this.velocity.setAngle(_currentAngle - this.turningRadius);
-  };
+  },
 
-  ship.turnRight = function() {
-    // console.log('turnRight');
+  turnRight: function() {
+    console.log('turnRight');
     var _currentAngle = this.velocity.getAngle();
     this.velocity.setAngle(_currentAngle + this.turningRadius);
-  };
+  },
 
-  ship.accelerate = function() {
-    // console.log('accelerate');
+  accelerate: function() {
+    console.log('accelerate');
     this.inMotion = true;
     var _currentLenght = this.velocity.getLength();
     var _newSpeed = _currentLenght + .05;
@@ -33,25 +40,23 @@ var Ship = function Ship() {
       _newSpeed = this.speedLimit;
     }
     this.velocity.setLength(_newSpeed);
-  };
+  },
 
-  ship.decelerate = function() {
-    // console.log('decelerate');
+  decelerate: function() {
+    console.log('decelerate');
     var _currentLenght = this.velocity.getLength();
     var _newSpeed = _currentLenght - .05;
     if (_newSpeed < 0) {
       _newSpeed = 0.001;
     }
     this.velocity.setLength(_newSpeed);
-  };
+  },
 
-
-
-  ship.fire = function() {
+  fire: function() {
     var _newBullet = new Bullet();
     _newBullet.init(
-      this.position.x ,
-      this.position.y ,
+      this.position.x,
+      this.position.y,
       this.velocity.getLength() + 10,
       this.velocity.getAngle(),
       10,
@@ -59,9 +64,9 @@ var Ship = function Ship() {
     );
     //_newBullet.mass =100;
     return _newBullet;
-  };
+  },
 
-  ship.draw = function() {
+  draw: function() {
     this.ctx.fillStyle = 'lightgrey';
     this.ctx.strokeStyle = this.color;
 
@@ -139,7 +144,7 @@ var Ship = function Ship() {
     this.ctx.stroke();
 
     if (this.velocity.getLength() > 0.01) {
-      var _size = (this.velocity.getLength() * 10  + 50) *-1;
+      var _size = (this.velocity.getLength() * 10 + 50) * -1;
       //console.log('draw thrust');
       //
       this.ctx.fillStyle = 'red';
@@ -167,11 +172,9 @@ var Ship = function Ship() {
     //this.ctx.fill();
     this.ctx.restore();
 
-    //this.inMotion = false;
-  };
-
-  return ship;
-};
+    //this.inMotion: false;
+  }
+});
 
 /** @type {Object} CommonJS export */
 module.exports = Ship;

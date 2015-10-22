@@ -1,12 +1,17 @@
 'use strict';
 
+/** Requires */
 var Canvas = require('../modules/canvas.js');
-var Helpers = require('../modules/helpers.js');
-var Input = require('../modules/input.js');
-var Vector = require('../modules/vector.js');
-
-var Entity = require('../objects/entity.js');
+var InputHandler = require('../modules/inputhandler.js');
 var Ship = require('../objects/ship.js');
+var Star = require('../objects/star.js');
+var Planet = require('../objects/planet.js');
+
+/**
+ * Main game routine
+ *
+ * @return {game} game object
+ */
 
 var Game = function() {
   var _lastTime;
@@ -27,46 +32,49 @@ var Game = function() {
   };
 
   // init the differents entities
-  var sun = new Entity();
-  var planet = new Entity();
+  var sun = new Star();
+  // var planet = new Entity();
   var ship = new Ship();
 
   // init user interaction
-  var interactions = new Input();
+  var interactions = new InputHandler();
 
   var projectilesList = [];
 
-  // game
-  game.init = function() {
+  /**
+  *  Buildroutine
+  */
+  game.build = function() {
     // init the differents canvas
     game.canvasList.bkgnd = new Canvas('bkgnd', 0, game);
     game.canvasList.ui = new Canvas('ui', 2, game);
     game.canvasList.main = new Canvas('main', 1, game);
 
     // init background color
-
     game.canvasList.bkgnd.ctx.fillStyle = 'black';
     game.canvasList.bkgnd.ctx.rect(0, 0, game.width, game.height);
     game.canvasList.bkgnd.ctx.fill();
 
-    // init the differents entities
-    sun.init(
-      game.width / 2,
-      game.height / 2,
-      0,
-      0
+    // Build the differents entities
+    sun.build(
+      game.width / 2, // x
+      game.height / 2, // y
+      0, // speed
+      0, // direction
+      20, // radius
+      game.canvasList.main.ctx // context
     );
     sun.mass = 1000;
 
-    planet.init(
-      game.width / 2 + 200,
-      game.height / 2,
-      .5,
-      Math.PI / 2
-    );
-    planet.mass = 100;
+    // planet.init(
+    //   game.width / 2 + 200,
+    //   game.height / 2,
+    //   .5,
+    //   Math.PI / 2
+    // );
+    // planet.mass = 100;
 
-    ship.init(
+    ship.build(
       game.width / 2 + 200,
       game.height / 2 + 100,
       0,
@@ -77,60 +85,72 @@ var Game = function() {
     ship.mass = 50;
 
     // begin the game loop
-
     game.loop();
   };
 
+  /**
+   * update routine
+   *
+   * @param  {int} dt [description]
+   */
   game.update = function(dt) {
     if (!game.pause) {
-      // controls
+      // controls-----
       if (interactions.isDown('up')) {
         ship.accelerate();
-        // console.log('up');
+        console.log('up');
       }
 
       if (interactions.isDown('down')) {
         ship.decelerate();
-        // console.log('down');
+        console.log('down');
       }
 
       if (interactions.isDown('left')) {
         ship.turnLeft();
-        // console.log('left');
+        console.log('left');
       }
 
       if (interactions.isDown('right')) {
         ship.turnRight();
-        // console.log('right');
+        console.log('right');
       }
 
       if (interactions.isDown('spacebar')) {
         projectilesList.push(ship.fire());
-        // console.log('right');
+        console.log('right');
       }
 
       // forces-----
-      planet.gravitateAround(sun);
+      //planet.gravitateAround(sun);
       //ship.gravitateAround(sun);
       //
       for (var i = 0; i < projectilesList.length; i++) {
-      projectilesList[i].gravitateAround(sun);
-    }
+        projectilesList[i].gravitateAround(sun);
+      }
 
-      // updates
-      planet.update(dt);
+      // updates-----
+      // planet.update(dt);
       ship.update(dt);
       //ship.updatebullets(dt);
-      game.updateProjectiles(dt);
+      //game.updateProjectiles(dt);
     }
 
     if (interactions.isPressed('enter')) {
       console.log('space' + game.pause);
       game.pause = !game.pause;
     }
-    game.draw();
+
+    if (!game.pause) {
+      game.draw();
+    }
   };
 
+  /**
+   * updates all independent Elements
+   *
+   * @param  {int} dt [description]
+   */
   game.updateProjectiles = function(dt) {
     // update all projectiles
     for (var i = 0; i < projectilesList.length; i++) {
@@ -143,26 +163,28 @@ var Game = function() {
         projectilesList.splice(i, 1);
       }
     }
-
   };
 
+  /**
+   * Draw all entities
+   */
   game.draw = function() {
-
     game.canvasList.main.clean();
     game.canvasList.ui.clean();
 
-    sun.drawDebug(game.canvasList.main.ctx, 'yellow', 20);
+    sun.draw();
     ship.draw();
 
     // projectiles
-
     for (var i = 0; i < projectilesList.length; i++) {
       projectilesList[i].draw();
     }
   };
 
+  /**
+   * RequestAnimationFrameLoop
+   */
   game.loop = function() {
-
     var now = Date.now();
     var dt = (now - _lastTime) / 1000;
 
